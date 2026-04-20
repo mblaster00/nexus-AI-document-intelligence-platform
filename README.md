@@ -2,9 +2,9 @@
 
 **AI-powered document intelligence platform — built production-grade on Kubernetes and GCP.**
 
-Nexus ingests documents (PDFs, reports, emails), runs them through a from-scratch RAG pipeline to extract structured meaning, and routes the output to downstream actions — all observable end-to-end through distributed tracing, metrics, and logs.
+Nexus ingests documents (PDFs, reports, emails), runs them through a from-scratch RAG pipeline to extract structured meaning, and routes the output to downstream actions all observable end-to-end through distributed tracing, metrics, and logs.
 
-[![CI](https://github.com/yourname/nexus/actions/workflows/ci.yml/badge.svg)](https://github.com/yourname/nexus/actions)
+[![CI](https://github.com/mblaster00/nexus-AI-document-intelligence-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/mblaster00/nexus-AI-document-intelligence-platform/actions)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -12,7 +12,7 @@ Nexus ingests documents (PDFs, reports, emails), runs them through a from-scratc
 
 ## What it does
 
-A document enters the ingestion API. It is queued, picked up by an async worker, parsed, chunked, and embedded into a vector store. An LLM extracts structured data from the most relevant chunks. A router decides the downstream action — Slack notification, Cloud Storage, webhook, or escalation — based on content and confidence. Every step emits traces, metrics, and logs to a full observability stack.
+A document enters the ingestion API. It is queued, picked up by an async worker, parsed, chunked, and embedded into a vector store. An LLM extracts structured data from the most relevant chunks. A router decides the downstream action — Slack notification, Cloud Storage, webhook, or escalation based on content and confidence. Every step emits traces, metrics, and logs to a full observability stack.
 
 ```
 Ingestion API → Redis Streams → Processing Worker
