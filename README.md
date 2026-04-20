@@ -1,6 +1,6 @@
 # Nexus
 
-**AI-powered document intelligence platform — built production-grade on Kubernetes and GCP.**
+**AI-powered document intelligence platform built production-grade on Kubernetes and GCP.**
 
 Nexus ingests documents (PDFs, reports, emails), runs them through a from-scratch RAG pipeline to extract structured meaning, and routes the output to downstream actions all observable end-to-end through distributed tracing, metrics, and logs.
 
@@ -49,7 +49,7 @@ Ingestion API → Redis Streams → Processing Worker
 
 ## Architecture decisions
 
-**Three services over a monolith.** Ingestion, processing, and routing are separate deployments. This surfaces real distributed systems problems early — job replay, backpressure, partial failure — rather than deferring them to a refactor.
+**Three services over a monolith.** Ingestion, processing, and routing are separate deployments. This surfaces real distributed systems problems early like job replay, backpressure, partial failure rather than deferring them to a refactor.
 
 **Redis Streams over Kafka.** Same consumer group semantics, acknowledgment, and replay capability with zero additional infrastructure at this scale.
 
