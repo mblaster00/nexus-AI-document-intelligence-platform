@@ -1,6 +1,5 @@
 import redis.asyncio as aioredis
 import structlog
-
 from app.core.config import settings
 
 logger = structlog.get_logger()
@@ -15,7 +14,12 @@ async def get_redis() -> aioredis.Redis:
     return _redis
 
 
-async def publish_document(redis, document_id: str, file_path: str, mime_type: str) -> str:
+async def publish_document(
+    redis: aioredis.Redis,
+    document_id: str,
+    file_path: str,
+    mime_type: str,
+) -> str:
     message = {
         "document_id": document_id,
         "file_path": file_path,
