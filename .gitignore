@@ -13,3 +13,9 @@ terraform.tfstate.backup
 *.env
 .env*
 !.env.example
+
+
+__pycache__/
+*.py[cod]
+.venv/
+data/samples/*.pdf

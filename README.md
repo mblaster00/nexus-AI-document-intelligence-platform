@@ -130,26 +130,17 @@ Workload Identity is configured per service. No static credentials are required 
 
 ```
 nexus/
-├── services/
-│   ├── ingestion-api/       # FastAPI — document intake
-│   ├── processing-worker/   # Chunking, embedding, retrieval
-│   └── action-router/       # Downstream action execution
-├── infrastructure/
-│   ├── terraform/           # GCP provisioning (modules + environments)
-│   └── kubernetes/          # Manifests per namespace
-├── observability/
-│   ├── otel-collector/
-│   ├── grafana/dashboards/
-│   └── prometheus/rules/
-├── ai/
-│   ├── rag/                 # chunking.py, embeddings.py, retrieval.py
-│   ├── extraction/prompts/
-│   └── evaluation/          # RAGAS evaluation suite
-├── docker-compose.yml
-├── docker-compose.observability.yml
+├── .env
+├── .env.example
+├── .gitignore
+├── README.md
+├── LEARNING.md
 ├── Makefile
-├── LEARNING.md              # Build journal and architectural decision log
-└── README.md
+├── docker-compose.yml
+├── data/
+│   └── samples/          ← your test PDFs go here
+└── services/
+    └── ingestion-api/    ← the only service we are building right now
 ```
 
 ---

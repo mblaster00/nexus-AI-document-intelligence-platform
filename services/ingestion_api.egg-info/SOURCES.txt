@@ -1,0 +1,6 @@
+pyproject.toml
+ingestion_api.egg-info/PKG-INFO
+ingestion_api.egg-info/SOURCES.txt
+ingestion_api.egg-info/dependency_links.txt
+ingestion_api.egg-info/requires.txt
+ingestion_api.egg-info/top_level.txt
