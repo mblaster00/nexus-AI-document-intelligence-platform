@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
 from app.core.database import get_db
-from app.core.queue import publish_document
+from app.core.queue import get_redis, publish_document
 from app.models.document import Document, DocumentStatus
 
 router = APIRouter()
@@ -40,6 +40,7 @@ class DocumentDetail(DocumentResponse):
 async def upload_document(
     file: UploadFile,
     db: AsyncSession = Depends(get_db),
+    redis=Depends(get_redis),
 ) -> DocumentResponse:
     if file.content_type not in settings.allowed_mime_types:
         raise HTTPException(
@@ -129,3 +130,4 @@ async def get_document(
         created_at=document.created_at.isoformat(),
         updated_at=document.updated_at.isoformat(),
     )
+

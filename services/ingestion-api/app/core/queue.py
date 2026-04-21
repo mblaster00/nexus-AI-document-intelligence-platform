@@ -15,9 +15,7 @@ async def get_redis() -> aioredis.Redis:
     return _redis
 
 
-async def publish_document(document_id: str, file_path: str, mime_type: str) -> str:
-    redis = await get_redis()
-
+async def publish_document(redis, document_id: str, file_path: str, mime_type: str) -> str:
     message = {
         "document_id": document_id,
         "file_path": file_path,
