@@ -79,6 +79,7 @@ async def upload_document(
     await db.refresh(document)
 
     await publish_document(
+        redis=redis,
         document_id=document_id,
         file_path=file_path,
         mime_type=file.content_type or "application/pdf",
