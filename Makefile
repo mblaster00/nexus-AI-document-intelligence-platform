@@ -30,3 +30,7 @@ db-shell: ## Open a PostgreSQL shell
 .PHONY: clean
 clean: ## Remove all containers and volumes
 	docker compose down -v
+
+.PHONY: seed
+seed: ## Upload sample PDFs from data/samples/
+	python3 scripts/seed_documents.py

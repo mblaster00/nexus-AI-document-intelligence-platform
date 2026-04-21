@@ -8,15 +8,16 @@ from app.core.queue import get_redis
 
 router = APIRouter()
 
-
 class HealthResponse(BaseModel):
     status: str
     database: str
     redis: str
 
-
 @router.get("/health", response_model=HealthResponse)
-async def health(db: AsyncSession = Depends(get_db)) -> HealthResponse:
+async def health(
+    db: AsyncSession = Depends(get_db),
+    redis=Depends(get_redis),
+) -> HealthResponse:
     db_status = "ok"
     redis_status = "ok"
 
@@ -26,7 +27,6 @@ async def health(db: AsyncSession = Depends(get_db)) -> HealthResponse:
         db_status = "unreachable"
 
     try:
-        redis = await get_redis()
         await redis.ping()
     except Exception:
         redis_status = "unreachable"
