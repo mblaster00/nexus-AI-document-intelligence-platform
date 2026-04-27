@@ -171,8 +171,6 @@ A sales manager asks "which customers are at churn risk this quarter?" the agent
 
 What makes this defensible: the MCP protocol standardises how the LLM interacts with each data source. Each business domain (engineering, sales, finance, marketing) exposes a typed MCP interface. The LLM orchestrates across all of them dynamically.
 
-Nexus builds the exact foundations needed to tackle this: RAG pipeline, MCP patterns, Kubernetes, observability. Revisit after Phase 6.
-
 ---
 
 ## License
