@@ -21,4 +21,4 @@ __pycache__/
 data/samples/*.pdf
 
 *.egg-info/ 
-.DS_Store
+*.DS_Store
