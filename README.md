@@ -149,12 +149,12 @@ nexus/
 
 | Phase | Description | Status |
 |---|---|---|
-| 1 | Local foundations — Docker, Compose, FastAPI, PostgreSQL | Complete |
-| 2 | RAG core — chunking, embeddings, Qdrant, Redis Streams | In progress |
-| 3 | Kubernetes migration — namespaces, probes, persistent volumes | Planned |
-| 4 | Observability — OTel instrumentation, Grafana dashboards | Planned |
-| 5 | GKE deployment — Terraform, Workload Identity, TLS ingress | Planned |
-| 6 | Advanced AI — RAGAS evaluation, fine-tuning, agentic routing | Planned |
+| 1 | Local foundations : Docker, Compose, FastAPI, PostgreSQL | Complete |
+| 2 | RAG core : chunking, embeddings, Qdrant, Redis Streams | In progress |
+| 3 | Kubernetes migration : namespaces, probes, persistent volumes | Planned |
+| 4 | Observability : OTel instrumentation, Grafana dashboards | Planned |
+| 5 | GKE deployment : Terraform, Workload Identity, TLS ingress | Planned |
+| 6 | Advanced AI : RAGAS evaluation, fine-tuning, agentic routing | Planned |
 
 ---
 
