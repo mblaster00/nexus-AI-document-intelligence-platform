@@ -158,21 +158,6 @@ nexus/
 
 ---
 
-## Idea : Enterprise MCP Layer (post-Nexus)
-
-A natural extension of what Nexus builds toward. The concept is a company-wide MCP server that exposes the full business corpus as tools accessible to an LLM agent source code, technical documentation, Jira tickets, product strategy, CRM data, marketing assets, financial metrics, SLAs.
-The gap in the current market is that most RAG solutions operate on technical documentation only. Crossing code with business strategy with customer data in a single coherent context is unsolved at the enterprise level.
-
-Concrete use cases:
-
-An engineer asks "what is the impact of this API change on our enterprise customers?" the agent consults the codebase, customer contracts, support tickets, and SLAs simultaneously.
-
-A sales manager asks "which customers are at churn risk this quarter?" the agent crosses product usage data, support interactions, and contract renewal dates.
-
-What makes this defensible: the MCP protocol standardises how the LLM interacts with each data source. Each business domain (engineering, sales, finance, marketing) exposes a typed MCP interface. The LLM orchestrates across all of them dynamically.
-
----
-
 ## License
 
 MIT
