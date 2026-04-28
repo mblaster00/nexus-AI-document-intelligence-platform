@@ -1,4 +1,4 @@
-# LEARNING.md — Nexus Build Journal
+# LEARNING.md : Nexus Build Journal
 
 This file is my personal reference for why I built Nexus the way I did, what I am trying to learn at each phase, and the decisions I made along the way. It is not meant for external readers.
 
@@ -224,10 +224,67 @@ To be filled in as I go.
 
 ## Idea — Enterprise MCP Layer (post-Nexus)
 
-A natural extension of what Nexus builds toward. The concept is a company-wide MCP server that exposes the full business corpus as tools accessible to an LLM agent — source code, technical documentation, Jira tickets, product strategy, CRM data, marketing assets, financial metrics, SLAs.
+A natural extension of what Nexus builds toward. The concept is a company-wide MCP server that exposes the full business corpus as tools accessible to an LLM agent source code, technical documentation, Jira tickets, product strategy, CRM data, marketing assets, financial metrics, SLAs.
 The gap in the current market is that most RAG solutions operate on technical documentation only. Crossing code with business strategy with customer data in a single coherent context is unsolved at the enterprise level.
+
 Concrete use cases:
-An engineer asks "what is the impact of this API change on our enterprise customers?" — the agent consults the codebase, customer contracts, support tickets, and SLAs simultaneously.
-A sales manager asks "which customers are at churn risk this quarter?" — the agent crosses product usage data, support interactions, and contract renewal dates.
+
+An engineer asks "what is the impact of this API change on our enterprise customers?" the agent consults the codebase, customer contracts, support tickets, and SLAs simultaneously.
+
+A sales manager asks "which customers are at churn risk this quarter?" the agent crosses product usage data, support interactions, and contract renewal dates.
+
 What makes this defensible: the MCP protocol standardises how the LLM interacts with each data source. Each business domain (engineering, sales, finance, marketing) exposes a typed MCP interface. The LLM orchestrates across all of them dynamically.
+
 Nexus builds the exact foundations needed to tackle this: RAG pipeline, MCP patterns, Kubernetes, observability. Revisit after Phase 6.
+
+## LLMOps Concepts
+
+LLMOps is MLOps applied specifically to LLM-powered systems. The core insight
+is that a service can be "up" with good latency and still be producing wrong,
+hallucinated, or degraded answers. Standard infrastructure observability does
+not catch that. LLMOps fills that gap.
+
+### Evaluation — DeepEval / RAGAS
+
+Measures whether the LLM is actually doing its job correctly. Key metrics for
+a RAG system:
+
+Faithfulness — is the answer grounded in the retrieved chunks or is the model
+hallucinating? Answer relevance — does the response actually answer the question
+asked? Context recall — did the retrieval step find the chunks that contain the
+answer?
+
+Evaluation runs continuously — on every model upgrade, prompt change, or
+chunking strategy change. It is a regression test suite for AI behaviour.
+
+Planned for Phase 6 using RAGAS.
+
+### Analytics — Langfuse / LangSmith
+
+Goes beyond infrastructure metrics. Tracks semantic usage: which queries are
+most frequent, which consistently produce low confidence answers, where the
+pipeline fails (retrieval vs generation), distribution of document types.
+
+Requires logging inputs, outputs, and intermediate pipeline states in a
+queryable way.
+
+### Cost Governance
+
+Every LLM call costs money. Cost governance means tracking token consumption
+per request and per document type, setting budget alerts, and making intelligent
+model tradeoffs. In regulated environments like Moody's this is required to
+justify AI infrastructure costs.
+
+Planned for Phase 6 — token usage logged via OpenTelemetry, aggregated in
+Grafana, monthly budget alert via Prometheus.
+
+### Model Routing — LiteLLM
+
+Not every request needs the same model. A model router decides which model to
+use based on request complexity. Simple classification goes to gpt-4o-mini,
+complex extraction goes to gpt-4o, sensitive data stays on a local model.
+
+LiteLLM provides a unified interface across OpenAI, Anthropic, and local models
+with routing rules defined in config.
+
+Planned for Phase 6 action router.
