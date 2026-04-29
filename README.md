@@ -151,10 +151,38 @@ nexus/
 |---|---|---|
 | 1 | Local foundations : Docker, Compose, FastAPI, PostgreSQL | Complete |
 | 2 | RAG core : chunking, embeddings, Qdrant, Redis Streams | Complete |
-| 3 | Kubernetes migration : namespaces, probes, persistent volumes | Planned |
+| 3 | Kubernetes migration : namespaces, probes, persistent volumes | In Progress |
 | 4 | Observability : OTel instrumentation, Grafana dashboards | Planned |
 | 5 | GKE deployment : Terraform, Workload Identity, TLS ingress | Planned |
 | 6 | Advanced AI : RAGAS evaluation, fine-tuning, agentic routing | Planned |
+
+---
+
+## Vision
+
+Nexus is built toward becoming a fully self-hosted, local-first AI document
+intelligence stack, deployable on any Kubernetes cluster with a single Helm
+command, with zero external dependencies in production.
+
+The end goal is a system where organisations bring their own documents, run
+their own models, and keep their data entirely within their own infrastructure.
+
+A user installs Nexus on their cluster, points it at a local model via Ollama
+(Mistral, Llama, Gemma, etc., configurable), uploads their document collections, and
+queries them in natural language through a CLI. The RAG pipeline adapts to each
+collection. No data leaves the infrastructure. No API keys. No SaaS dependency.
+
+This makes Nexus particularly relevant for regulated environments, finance,
+healthcare, legal, where data sovereignty is non-negotiable.
+
+The CLI experience will look like this:
+
+    nexus config set model mistral
+    nexus ingest ./documents/
+    nexus query "what are the capital requirements in the Basel IV framework?"
+
+Phase 6 introduces local model support via Ollama and the query CLI. 
+Full product vision is targeted post-Phase 6.
 
 ---
 
