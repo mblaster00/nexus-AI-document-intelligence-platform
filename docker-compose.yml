@@ -33,16 +33,54 @@ services:
     environment:
       DATABASE_URL: postgresql+asyncpg://nexus:${POSTGRES_PASSWORD}@postgres:5432/nexus
       REDIS_URL: redis://redis:6379
+      UPLOAD_DIR: /tmp/nexus/uploads
     ports:
       - "8000:8000"
+    volumes:
+      - ./services/ingestion-api/app:/app/app
+      - ./services/ingestion-api/tests:/app/tests
+      - uploads:/tmp/nexus/uploads
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
+
+  processing-worker:
+    build:
+      context: .
+      dockerfile: services/processing-worker/Dockerfile
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://nexus:${POSTGRES_PASSWORD}@postgres:5432/nexus
+      REDIS_URL: redis://redis:6379
+      QDRANT_URL: http://qdrant:6333
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
     volumes:
-      - ./services/ingestion-api/app:/app/app
-      - ./services/ingestion-api/tests:/app/tests
+      - uploads:/tmp/nexus/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      qdrant:
+        condition: service_healthy
+    restart: unless-stopped
+
+  qdrant:
+    image: qdrant/qdrant:v1.9.2
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    healthcheck:
+      test: [ "CMD", "bash", "-c", "echo > /dev/tcp/localhost/6333" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres_data:
+  redis_data:
+  uploads:
+  qdrant_data:

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-
+import uuid
 import structlog
 from openai import AsyncOpenAI
 from qdrant_client import AsyncQdrantClient
@@ -42,7 +42,7 @@ async def store_embeddings(
 ) -> None:
     points = [
         PointStruct(
-            id=f"{ec.chunk.document_id}_{ec.chunk.index}",
+            id=str(uuid.uuid5(uuid.NAMESPACE_DNS, f"{ec.chunk.document_id}_{ec.chunk.index}")),
             vector=ec.embedding,
             payload={
                 "document_id": ec.chunk.document_id,
