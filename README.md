@@ -166,23 +166,31 @@ command, with zero external dependencies in production.
 
 The end goal is a system where organisations bring their own documents, run
 their own models, and keep their data entirely within their own infrastructure.
+No data leaves the cluster. No API keys. No SaaS dependency. No vendor lock-in.
 
 A user installs Nexus on their cluster, points it at a local model via Ollama
-(Mistral, Llama, Gemma, etc., configurable), uploads their document collections, and
-queries them in natural language through a CLI. The RAG pipeline adapts to each
-collection. No data leaves the infrastructure. No API keys. No SaaS dependency.
+(Mistral, Llama, Gemma etc., configurable based on available resources), uploads
+their document collections, and queries them in natural language through a CLI.
+The RAG pipeline adapts per collection. Embeddings and generation both run
+locally via Ollama, the OpenAI dependency is removed entirely in production.
 
 This makes Nexus particularly relevant for regulated environments, finance,
-healthcare, legal, where data sovereignty is non-negotiable.
+healthcare, legal, where data sovereignty is non-negotiable and sending
+documents to a third-party API is either prohibited or legally risky.
 
 The CLI experience will look like this:
 
-    nexus config set model mistral
+    nexus config set llm-model mistral
+    nexus config set embedding-model nomic-embed-text
     nexus ingest ./documents/
     nexus query "what are the capital requirements in the Basel IV framework?"
 
-Phase 6 introduces local model support via Ollama and the query CLI. 
-Full product vision is targeted post-Phase 6.
+OpenAI is used during development for speed and reliability. Phase 6 replaces
+it entirely with Ollama making Nexus production-ready with zero external API
+dependencies.
+
+Phase 6 introduces local model support via Ollama and the query CLI. The Helm
+chart is the Phase 3 deliverable. Full product vision is targeted post-Phase 6.
 
 ---
 
