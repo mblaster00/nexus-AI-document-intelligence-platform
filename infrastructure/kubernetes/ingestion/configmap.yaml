@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ingestion-config
+  namespace: nexus-ingestion
+data:
+  DEBUG: "false"
+  MAX_UPLOAD_SIZE_MB: "20"
+  UPLOAD_DIR: "/tmp/nexus/uploads"
+  REDIS_STREAM_NAME: "nexus:documents"
+  OTEL_ENABLED: "false"

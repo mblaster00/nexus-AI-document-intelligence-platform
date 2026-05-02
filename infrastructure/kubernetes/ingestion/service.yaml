@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ingestion-api
+  namespace: nexus-ingestion
+spec:
+  selector:
+    app: ingestion-api
+  type: NodePort
+  ports:
+    - port: 8000
+      targetPort: 8000
+      nodePort: 30800

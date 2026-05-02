@@ -194,6 +194,22 @@ chart is the Phase 3 deliverable. Full product vision is targeted post-Phase 6.
 
 ---
 
+### Edtech AI Assistant (One of the Nexus use cases)
+
+A Nexus-powered study assistant for middle and high school students.
+
+The student uploads their course documents at the start of the year like textbooks,
+class notes, past exams. Nexus ingests them into a personal RAG pipeline. The AI
+can then answer questions, suggest revision topics, generate practice exercises,
+and track progress through the curriculum, all grounded in the student's own
+documents, not generic internet knowledge.
+
+Fully local, fully private. Parents and schools keep control of the data.
+Deployable on a school server with a single Helm command.
+
+This is a direct application of the Nexus vision, with same infrastructure,
+different document domain.
+
 ## License
 
 MIT

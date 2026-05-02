@@ -12,6 +12,9 @@ terraform.tfstate.backup
 .env*
 !.env.example
 
+# Kubernetes secrets
+infrastructure/kubernetes/**/secret.yaml
+
 
 __pycache__/
 *.py[cod]

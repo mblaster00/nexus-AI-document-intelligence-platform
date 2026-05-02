@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nexus-ingestion
+  labels:
+    app: nexus
+    layer: ingestion
+
+---
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nexus-processing
+  labels:
+    app: nexus
+    layer: processing
