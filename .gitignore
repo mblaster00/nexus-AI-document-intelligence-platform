@@ -14,7 +14,7 @@ terraform.tfstate.backup
 
 # Kubernetes secrets
 infrastructure/kubernetes/**/secret.yaml
-
+infrastructure/kubernetes/**/*-secret.yaml
 
 __pycache__/
 *.py[cod]
