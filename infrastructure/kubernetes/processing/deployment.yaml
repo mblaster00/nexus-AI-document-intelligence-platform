@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: processing-worker
+  namespace: nexus-ingestion
+  labels:
+    app: processing-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: processing-worker
+  template:
+    metadata:
+      labels:
+        app: processing-worker
+    spec:
+      containers:
+        - name: processing-worker
+          image: processing-worker:local
+          imagePullPolicy: Never
+          envFrom:
+            - configMapRef:
+                name: worker-config
+            - secretRef:
+                name: worker-secrets
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+          volumeMounts:
+            - name: uploads
+              mountPath: /tmp/nexus/uploads
+      volumes:
+        - name: uploads
+          persistentVolumeClaim:
+            claimName: uploads-pvc

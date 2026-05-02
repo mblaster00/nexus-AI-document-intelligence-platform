@@ -47,3 +47,10 @@ spec:
             initialDelaySeconds: 10
             periodSeconds: 10
             failureThreshold: 3
+          volumeMounts:
+            - name: uploads
+              mountPath: /tmp/nexus/uploads
+      volumes:
+        - name: uploads
+          persistentVolumeClaim:
+            claimName: uploads-pvc
