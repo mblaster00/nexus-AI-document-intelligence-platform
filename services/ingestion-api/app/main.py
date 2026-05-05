@@ -1,10 +1,11 @@
 import structlog
 import uvicorn
 from fastapi import FastAPI
+
+from app.routes import documents, health
 from app.core.telemetry import setup_telemetry
 from app.core.config import settings
 from app.core.database import create_tables
-from app.routes import documents, health
 
 logger = structlog.get_logger()
 
