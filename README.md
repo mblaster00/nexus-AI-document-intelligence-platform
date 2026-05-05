@@ -153,8 +153,8 @@ nexus/
 | 2 | RAG core : chunking, embeddings, Qdrant, Redis Streams | Complete |
 | 3 | Kubernetes migration : namespaces, probes, persistent volumes | Complete |
 | 4 | Observability : OTel instrumentation, Grafana dashboards | Complete |
-| 5 | GKE deployment : Terraform, Workload Identity, TLS ingress | In Progress |
-| 6 | Advanced AI : RAGAS evaluation, fine-tuning, agentic routing | Planned |
+| 5 | Advanced AI : RAGAS evaluation, fine-tuning, agentic routing | In Progress |
+| 6 | GKE deployment : Terraform, Workload Identity, TLS ingress | Planned |
 
 ---
 

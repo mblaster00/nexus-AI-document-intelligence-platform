@@ -35,6 +35,10 @@ clean: ## Remove all containers and volumes
 seed: ## Upload sample PDFs from data/samples/
 	python3 scripts/seed_documents.py
 
+.PHONY: fix
+fix: ## Auto-fix ruff issues
+	ruff check app/ --fix
+
 .PHONY: observability-up
 observability-up: ## Start the observability stack
 	docker network create nexus-network 2>/dev/null || true
