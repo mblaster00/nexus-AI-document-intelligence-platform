@@ -14,7 +14,6 @@ from app.core.queue import get_redis, publish_document
 from app.core.telemetry import get_tracer
 from app.models.document import Document, DocumentStatus
 
-
 router = APIRouter()
 logger = structlog.get_logger()
 tracer = get_tracer(__name__)
