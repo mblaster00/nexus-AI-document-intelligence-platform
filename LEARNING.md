@@ -288,3 +288,33 @@ LiteLLM provides a unified interface across OpenAI, Anthropic, and local models
 with routing rules defined in config.
 
 Planned for Phase 6 action router.
+
+### Evaluation Strategy — Offline + Online
+
+Production LLM evaluation has two distinct layers:
+
+**Offline evaluation (DeepEval / RAGAS)** — runs before deployment like a test
+suite. A golden dataset of questions with known correct answers is prepared.
+The RAG pipeline runs against them and measures faithfulness, context recall,
+and answer relevance. Runs in CI on every prompt change or model upgrade.
+Planned for Phase 6.
+
+**Online evaluation (production monitoring)** — runs continuously on real
+queries using proxy signals:
+
+Retrieval confidence scores — Qdrant returns a similarity score per chunk.
+Scores below 0.7 suggest poor retrieval quality.
+
+LLM self-evaluation — after generating an answer, ask the LLM to rate its
+own confidence. Cheap and surprisingly effective.
+
+User feedback signals — thumbs up/down, query reformulations. Strongest
+signal but requires a UI layer.
+
+**Key metric to track:** average retrieval score per query over time. A drop
+from 0.85 to 0.65 over two weeks signals document collection drift, query
+pattern shift, or embedding model mismatch — catchable in Grafana before
+users notice.
+
+The OpenTelemetry traces built in Phase 4 carry retrieval scores as span
+attributes. Phase 6 promotes them to Prometheus metrics with alerting.
