@@ -11,8 +11,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.config import settings
 from app.core.database import get_db
 from app.core.queue import get_redis, publish_document
-from app.models.document import Document, DocumentStatus
 from app.core.telemetry import get_tracer
+from app.models.document import Document, DocumentStatus
+
 
 router = APIRouter()
 logger = structlog.get_logger()
