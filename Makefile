@@ -34,3 +34,14 @@ clean: ## Remove all containers and volumes
 .PHONY: seed
 seed: ## Upload sample PDFs from data/samples/
 	python3 scripts/seed_documents.py
+
+.PHONY: observability-up
+observability-up: ## Start the observability stack
+	docker network create nexus-network 2>/dev/null || true
+	docker compose -f docker-compose.observability.yml up -d
+	@echo "Grafana:    http://localhost:3000  (admin / admin)"
+	@echo "Prometheus: http://localhost:9090"
+
+.PHONY: observability-down
+observability-down: ## Stop the observability stack
+	docker compose -f docker-compose.observability.yml down

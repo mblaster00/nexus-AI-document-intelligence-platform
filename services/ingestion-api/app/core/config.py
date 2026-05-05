@@ -11,6 +11,8 @@ class Settings(BaseSettings):
     database_url: str = "postgresql+asyncpg://nexus:nexus@localhost:5432/nexus"
     redis_url: str = "redis://localhost:6379"
     redis_stream_name: str = "nexus:documents"
+    otel_exporter_otlp_endpoint: str = "http://localhost:4317"
+    otel_enabled: bool = True
 
     upload_dir: str = "/tmp/nexus/uploads"
     max_upload_size_mb: int = 20

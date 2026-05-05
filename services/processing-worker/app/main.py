@@ -11,9 +11,23 @@ from ai.rag.chunking import split_text
 from ai.rag.embeddings import embed_chunks
 from ai.rag.pdf_parser import parse_pdf
 from ai.rag.retrieval import ensure_collection, store_embeddings
+from opentelemetry import trace
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.exporter.otlp.proto.grpc import OTLPSpanExporter
 
 logger = structlog.get_logger()
+tracer = trace.get_tracer(__name__)
 
+def setup_telemetry() -> None:
+    if not settings.otel_enabled:
+        return
+    resource = Resource.create({"service.name": "processing-worker"})
+    provider = TracerProvider(resource=resource)
+    exporter = OTLPSpanExporter(endpoint=settings.otel_exporter_otlp_endpoint)
+    provider.add_span_processor(BatchSpanProcessor(exporter))
+    trace.set_tracer_provider(provider)
 
 async def process_document(
     document_id: str,
@@ -23,22 +37,29 @@ async def process_document(
 ) -> None:
     await mark_processing(document_id)
 
-    parsed = parse_pdf(file_path=file_path, document_id=document_id)
-    logger.info("pdf_parsed", document_id=document_id, pages=parsed.total_pages)
+    with tracer.start_as_current_span("process_document") as span:
+        span.set_attribute("document.id", document_id)
 
-    chunks = split_text(text=parsed.full_text, document_id=document_id)
-    logger.info("text_chunked", document_id=document_id, chunks=len(chunks))
+        with tracer.start_as_current_span("parse_pdf"):
+            parsed = parse_pdf(file_path=file_path, document_id=document_id)
+            span.set_attribute("document.pages", parsed.total_pages)
 
-    embedded = await embed_chunks(chunks=chunks, client=openai_client)
-    logger.info("chunks_embedded", document_id=document_id, count=len(embedded))
+        with tracer.start_as_current_span("chunk_text"):
+            chunks = split_text(text=parsed.full_text, document_id=document_id)
+            span.set_attribute("document.chunks", len(chunks))
 
-    await store_embeddings(client=qdrant_client, embedded_chunks=embedded)
-    logger.info("embeddings_stored", document_id=document_id)
+        with tracer.start_as_current_span("embed_chunks") as embed_span:
+            embedded = await embed_chunks(chunks=chunks, client=openai_client)
+            embed_span.set_attribute("embedding.chunk_count", len(embedded))
+
+        with tracer.start_as_current_span("store_embeddings"):
+            await store_embeddings(client=qdrant_client, embedded_chunks=embedded)
 
     await mark_completed(document_id)
 
 
 async def run_worker() -> None:
+    setup_telemetry()
     redis = aioredis.from_url(settings.redis_url, decode_responses=True)
     openai_client = AsyncOpenAI(api_key=settings.openai_api_key)
     qdrant_client = AsyncQdrantClient(url=settings.qdrant_url)

@@ -12,10 +12,11 @@ from app.core.config import settings
 from app.core.database import get_db
 from app.core.queue import get_redis, publish_document
 from app.models.document import Document, DocumentStatus
+from app.core.telemetry import get_tracer
 
 router = APIRouter()
 logger = structlog.get_logger()
-
+tracer = get_tracer(__name__)
 
 class DocumentResponse(BaseModel):
     id: str
@@ -42,63 +43,70 @@ async def upload_document(
     db: AsyncSession = Depends(get_db),
     redis=Depends(get_redis),
 ) -> DocumentResponse:
-    if file.content_type not in settings.allowed_mime_types:
-        raise HTTPException(
-            status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-            detail=f"Unsupported file type: {file.content_type}",
+    with tracer.start_as_current_span("upload_document") as span:
+        span.set_attribute("document.filename", file.filename or "unknown")
+        span.set_attribute("document.mime_type", file.content_type or "unknown")
+
+        if file.content_type not in settings.allowed_mime_types:
+            raise HTTPException(
+                status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+                detail=f"Unsupported file type: {file.content_type}",
+            )
+
+        content = await file.read()
+        size_bytes = len(content)
+        max_bytes = settings.max_upload_size_mb * 1024 * 1024
+
+        if size_bytes > max_bytes:
+            raise HTTPException(
+                status_code=status.HTTP_413_CONTENT_TOO_LARGE,
+                detail=f"File exceeds {settings.max_upload_size_mb}MB limit",
+            )
+
+        document_id = str(uuid.uuid4())
+        upload_path = Path(settings.upload_dir)
+        upload_path.mkdir(parents=True, exist_ok=True)
+        file_path = str(upload_path / f"{document_id}.pdf")
+
+        async with aiofiles.open(file_path, "wb") as f:
+            await f.write(content)
+
+        document = Document(
+            id=document_id,
+            filename=file.filename or "unnamed.pdf",
+            mime_type=file.content_type or "application/pdf",
+            file_path=file_path,
+            file_size_bytes=size_bytes,
+            status=DocumentStatus.PENDING,
+        )
+        db.add(document)
+        await db.commit()
+        await db.refresh(document)
+
+        await publish_document(
+            redis=redis,
+            document_id=document_id,
+            file_path=file_path,
+            mime_type=file.content_type or "application/pdf",
         )
 
-    content = await file.read()
-    size_bytes = len(content)
-    max_bytes = settings.max_upload_size_mb * 1024 * 1024
-
-    if size_bytes > max_bytes:
-        raise HTTPException(
-            status_code=status.HTTP_413_CONTENT_TOO_LARGE,
-            detail=f"File exceeds {settings.max_upload_size_mb}MB limit",
+        logger.info(
+            "document_accepted",
+            document_id=document_id,
+            filename=file.filename,
+            size_bytes=size_bytes,
         )
 
-    document_id = str(uuid.uuid4())
-    upload_path = Path(settings.upload_dir)
-    upload_path.mkdir(parents=True, exist_ok=True)
-    file_path = str(upload_path / f"{document_id}.pdf")
+        span.set_attribute("document.id", document_id)
+        span.set_attribute("document.size_bytes", size_bytes)
 
-    async with aiofiles.open(file_path, "wb") as f:
-        await f.write(content)
-
-    document = Document(
-        id=document_id,
-        filename=file.filename or "unnamed.pdf",
-        mime_type=file.content_type or "application/pdf",
-        file_path=file_path,
-        file_size_bytes=size_bytes,
-        status=DocumentStatus.PENDING,
-    )
-    db.add(document)
-    await db.commit()
-    await db.refresh(document)
-
-    await publish_document(
-        redis=redis,
-        document_id=document_id,
-        file_path=file_path,
-        mime_type=file.content_type or "application/pdf",
-    )
-
-    logger.info(
-        "document_accepted",
-        document_id=document_id,
-        filename=file.filename,
-        size_bytes=size_bytes,
-    )
-
-    return DocumentResponse(
-        id=document.id,
-        filename=document.filename,
-        status=document.status,
-        mime_type=document.mime_type,
-        file_size_bytes=document.file_size_bytes,
-    )
+        return DocumentResponse(
+            id=document.id,
+            filename=document.filename,
+            status=document.status,
+            mime_type=document.mime_type,
+            file_size_bytes=document.file_size_bytes,
+        )
 
 
 @router.get(

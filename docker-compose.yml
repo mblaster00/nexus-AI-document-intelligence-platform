@@ -15,6 +15,9 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - default
+      - nexus-network
 
   redis:
     image: redis:7-alpine
@@ -25,6 +28,9 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - default
+      - nexus-network
 
   ingestion-api:
     build:
@@ -34,6 +40,8 @@ services:
       DATABASE_URL: postgresql+asyncpg://nexus:${POSTGRES_PASSWORD}@postgres:5432/nexus
       REDIS_URL: redis://redis:6379
       UPLOAD_DIR: /tmp/nexus/uploads
+      OTEL_ENABLED: "true"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector:4317"
     ports:
       - "8000:8000"
     volumes:
@@ -45,6 +53,9 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    networks:
+      - default
+      - nexus-network
 
   processing-worker:
     build:
@@ -56,6 +67,8 @@ services:
       REDIS_URL: redis://redis:6379
       QDRANT_URL: http://qdrant:6333
       OPENAI_API_KEY: ${OPENAI_API_KEY}
+      OTEL_ENABLED: "true"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector:4317"
     volumes:
       - uploads:/tmp/nexus/uploads
     depends_on:
@@ -66,6 +79,9 @@ services:
       qdrant:
         condition: service_healthy
     restart: unless-stopped
+    networks:
+      - default
+      - nexus-network
 
   qdrant:
     image: qdrant/qdrant:v1.9.2
@@ -78,9 +94,18 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - default
+      - nexus-network
 
 volumes:
   postgres_data:
   redis_data:
   uploads:
   qdrant_data:
+
+networks:
+  default:
+    name: nexus-app-network
+  nexus-network:
+    external: true
